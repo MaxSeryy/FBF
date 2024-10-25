@@ -1,1 +1,1 @@
-laboratory work on ‘Basics of databases’
+WEB interface for control Laboratory work of ‘Basics of databases’
