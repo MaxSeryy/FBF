@@ -58,6 +58,7 @@ if (isset($_POST['username'])) {
         <input type="text" id="username" name="username"><br><br>
         <label for="password">Пароль:</label>
         <input type="password" id="password" name="password"><br><br>
+        Залишити порожнім для перегляду<br> <br>
         <div style="text-align: center;">
             <button type="submit" class="button">Увійти</button>
         </div>
