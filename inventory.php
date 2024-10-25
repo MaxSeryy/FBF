@@ -66,8 +66,8 @@ $result = $conn->query($query);
                 <td><?= $row['name'] ?></td>
                 <td><?= $row['rent_cost'] ?> USD</td>
                 <td>
-                    <a href="inventory.php?id=<?= $row['id'] ?>&sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>" onclick="return confirm('Ви впевнені, що хочете видалити цей інвентар?')">Видалити</a> |
-                    <a href="actions/inventory/edit_inventory.php?id=<?= $row['id'] ?>&sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>">Редагувати</a>
+                    <a href="actions/inventory/edit_inventory.php?id=<?= $row['id'] ?>&sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>">Редагувати</a> | 
+                    <a href="inventory.php?id=<?= $row['id'] ?>&sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>" onclick="return confirm('Ви впевнені, що хочете видалити цей інвентар?')">Видалити</a>
                 </td>
             </tr>
         <?php } ?>
