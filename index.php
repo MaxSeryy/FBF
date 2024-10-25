@@ -45,6 +45,6 @@ if (!isset($_SESSION['username'])) {
     <button class="menu-button" onclick="window.location.href='inventory.php'">Інвентар</button>
     <button class="menu-button" onclick="window.location.href='managers.php'">Менеджери</button>
     <button class="button"onclick="window.location.href='logout.php'" style="float:right;">Logout</button>
-    <div class="version">Версія 0.9.5</div>
+    <div class="version">Версія 1.0.0</div>
 </body>
 </html>
