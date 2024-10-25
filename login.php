@@ -5,6 +5,10 @@ if (isset($_POST['username'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
+    if (empty($username)) {
+        $username = 'user';
+    }
+
     if ($username === 'admin' && $password === '123') {
         $_SESSION['username'] = 'admin';
         header('Location: index.php');
@@ -51,7 +55,7 @@ if (isset($_POST['username'])) {
     <form method="post">
         <button id="theme-toggle">Темна тема</button>
         <label for="username">Ім'я користувача:</label>
-        <input type="text" id="username" name="username" required><br><br>
+        <input type="text" id="username" name="username"><br><br>
         <label for="password">Пароль:</label>
         <input type="password" id="password" name="password"><br><br>
         <div style="text-align: center;">
