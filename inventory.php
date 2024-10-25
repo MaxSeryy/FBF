@@ -11,6 +11,13 @@ if (isset($_GET['id'])) {
         echo "Помилка: " . $conn->error;
     }
 }
+
+$sort_column = $_GET['sort'] ?? 'id';
+$sort_direction = $_GET['dir'] ?? 'ASC';
+$sort_direction = strtoupper($sort_direction) === 'ASC' ? 'ASC' : 'DESC';
+
+$query = "SELECT * FROM inventory ORDER BY $sort_column $sort_direction";
+$result = $conn->query($query);
 ?>
 <!DOCTYPE html>
 <html lang="uk">
@@ -41,15 +48,16 @@ if (isset($_GET['id'])) {
 <body>
     <h1>Доступний Інвентар</h1>
     <button id="theme-toggle">Темна тема</button>
+    <?php if (isset($deleteMessage)) { echo "<p>$deleteMessage</p>"; } ?>
     <?php
-    $query = "SELECT * FROM inventory";
+    $query = "SELECT * FROM inventory ORDER BY $sort_column $sort_direction";
     $result = $conn->query($query);
     ?>
     <table border="1">
         <tr>
-            <th>ID</th>
-            <th>Назва</th>
-            <th>Вартість оренди</th>
+            <th><a href="?sort=id&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">ID</a></th>
+            <th><a href="?sort=name&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Назва</a></th>
+            <th><a href="?sort=rent_cost&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Вартість оренди</a></th>
             <th>Дії</th>
         </tr>
         <?php while ($row = $result->fetch_assoc()) { ?>
@@ -58,15 +66,15 @@ if (isset($_GET['id'])) {
                 <td><?= $row['name'] ?></td>
                 <td><?= $row['rent_cost'] ?> USD</td>
                 <td>
-                    <a href="inventory.php?id=<?= $row['id'] ?>" onclick="return confirm('Ви впевнені, що хочете видалити цей інвентар?')">Видалити</a> |
-                    <a href="actions/inventory/edit_inventory.php?id=<?= $row['id'] ?>">Редагувати</a>
+                    <a href="inventory.php?id=<?= $row['id'] ?>&sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>" onclick="return confirm('Ви впевнені, що хочете видалити цей інвентар?')">Видалити</a> |
+                    <a href="actions/inventory/edit_inventory.php?id=<?= $row['id'] ?>&sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>">Редагувати</a>
                 </td>
             </tr>
         <?php } ?>
     </table>
     <?php $conn->close(); ?>
     <br>
-    <button class="button" onclick="window.location.href='index.php'">Повернутися на головну</button>
-    <button class="button" onclick="window.location.href='actions/inventory/add_inventory.php'">Додати новий інвентар</button>
+    <button class="button" onclick="window.location.href='index.php?sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>'">Повернутися на головну</button>
+    <button class="button" onclick="window.location.href='actions/inventory/add_inventory.php?sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>'">Додати новий інвентар</button>
 </body>
 </html>

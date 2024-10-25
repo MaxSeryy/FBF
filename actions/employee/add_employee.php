@@ -7,18 +7,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $project_id = $_POST['project_id'];
     $inventory_ids = $_POST['inventory_ids'];
 
-    $query = "INSERT INTO employee (name, role, project_id) VALUES ('$name', '$role', '$project_id')";
-    if ($conn->query($query) === TRUE) {
-        $employee_id = $conn->insert_id;
+    if (empty($inventory_ids)) {
+        echo "Помилка: Ви повинні вибрати хоча б один інвентар.";
+    } else {
+        $query = "INSERT INTO employee (name, role, project_id) VALUES ('$name', '$role', '$project_id')";
+        if ($conn->query($query) === TRUE) {
+            $employee_id = $conn->insert_id;
 
-        if (!empty($inventory_ids)) {
             foreach ($inventory_ids as $inventory_id) {
                 $conn->query("INSERT INTO employee_inventory (employee_id, inventory_id) VALUES ('$employee_id', '$inventory_id')");
             }
+            header('Location: ../../employees.php');
+        } else {
+            echo "Помилка: " . $query . "<br>" . $conn->error;
         }
-        header('Location: ../../employees.php');
-    } else {
-        echo "Помилка: " . $query . "<br>" . $conn->error;
     }
 
     $conn->close();
@@ -38,7 +40,7 @@ $inventory_result = $conn->query($inventory_query);
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../../styles.css">
-        <script>
+    <script>
         document.addEventListener('DOMContentLoaded', (event) => {
             const themeToggle = document.getElementById('theme-toggle');
             const currentTheme = localStorage.getItem('theme') || 'light';
@@ -80,7 +82,7 @@ $inventory_result = $conn->query($inventory_query);
         </select><br><br>
         Інвентар (затисніть Ctrl для вибору декількох):
         <br>
-        <select name="inventory_ids[]" multiple>
+        <select name="inventory_ids[]" multiple required>
             <?php while ($inventory = $inventory_result->fetch_assoc()) { ?>
                 <option value="<?= $inventory['id'] ?>"><?= $inventory['name'] ?></option>
             <?php } ?>
