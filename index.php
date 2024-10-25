@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['username'])) {
+    header('Location: login.php');
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="uk">
 
@@ -35,6 +44,7 @@
     <button class="menu-button" onclick="window.location.href='employees.php'">Працівники</button>
     <button class="menu-button" onclick="window.location.href='inventory.php'">Інвентар</button>
     <button class="menu-button" onclick="window.location.href='managers.php'">Менеджери</button>
+    <button class="button"onclick="window.location.href='logout.php'" style="float:right;">Logout</button>
     <div class="version">Версія 0.9.5</div>
 </body>
 </html>

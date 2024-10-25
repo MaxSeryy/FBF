@@ -2,9 +2,16 @@
 session_start();
 require_once 'config.php';
 
+if (!isset($_SESSION['username'])) {
+    header('Location: login.php');
+    exit();
+}
+
+$isAdmin = ($_SESSION['username'] === 'admin');
+
 $message = '';
 
-if (isset($_GET['delete_id'])) {
+if ($isAdmin && isset($_GET['delete_id'])) {
     $id = $_GET['delete_id'];
     $query = "DELETE FROM project WHERE id=$id";
 
@@ -84,8 +91,12 @@ $result = $conn->query($query);
                 <td><?= $row['manager_name'] ?></td>
                 <td><?= $row['client_name'] ?></td>
                 <td>
-                    <a href="actions/project/edit_project.php?id=<?= $row['id'] ?>">Редагувати</a> | 
-                    <a href="projects.php?delete_id=<?= $row['id'] ?>" onclick="return confirm('Ви впевнені, що хочете видалити цей проект?')">Видалити</a>
+                    <?php if ($isAdmin) { ?>
+                        <a href="actions/project/edit_project.php?id=<?= $row['id'] ?>">Редагувати</a> | 
+                        <a href="projects.php?delete_id=<?= $row['id'] ?>" onclick="return confirm('Ви впевнені, що хочете видалити цей проект?')">Видалити</a>
+                    <?php } else { ?>
+                        <span>Недоступно</span>
+                    <?php } ?>
                 </td>
             </tr>
         <?php } ?>
@@ -93,6 +104,8 @@ $result = $conn->query($query);
     <?php $conn->close(); ?>
     <br>
     <button class="button" onclick="window.location.href='index.php'">Повернутися на головну</button>
-    <button class="button" onclick="window.location.href='actions/project/add_project.php'">Додати новий проект</button>
+    <?php if ($isAdmin) { ?>
+        <button class="button" onclick="window.location.href='actions/project/add_project.php'">Додати новий проект</button>
+    <?php } ?>
 </body>
 </html>

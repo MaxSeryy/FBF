@@ -1,7 +1,15 @@
 <?php
 require_once 'config.php';
 
-if (isset($_GET['id'])) {
+session_start();
+if (!isset($_SESSION['username'])) {
+    header('Location: login.php');
+    exit();
+}
+
+$isAdmin = ($_SESSION['username'] === 'admin');
+
+if ($isAdmin && isset($_GET['id'])) {
     $id = $_GET['id'];
 
     $query = "DELETE FROM inventory WHERE id=$id";
@@ -49,10 +57,6 @@ $result = $conn->query($query);
     <h1>Доступний Інвентар</h1>
     <button id="theme-toggle">Темна тема</button>
     <?php if (isset($deleteMessage)) { echo "<p>$deleteMessage</p>"; } ?>
-    <?php
-    $query = "SELECT * FROM inventory ORDER BY $sort_column $sort_direction";
-    $result = $conn->query($query);
-    ?>
     <table border="1">
         <tr>
             <th><a href="?sort=id&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">ID</a></th>
@@ -66,8 +70,12 @@ $result = $conn->query($query);
                 <td><?= $row['name'] ?></td>
                 <td><?= $row['rent_cost'] ?> USD</td>
                 <td>
-                    <a href="actions/inventory/edit_inventory.php?id=<?= $row['id'] ?>&sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>">Редагувати</a> | 
-                    <a href="inventory.php?id=<?= $row['id'] ?>&sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>" onclick="return confirm('Ви впевнені, що хочете видалити цей інвентар?')">Видалити</a>
+                    <?php if ($isAdmin) { ?>
+                        <a href="actions/inventory/edit_inventory.php?id=<?= $row['id'] ?>&sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>">Редагувати</a> | 
+                        <a href="inventory.php?id=<?= $row['id'] ?>&sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>" onclick="return confirm('Ви впевнені, що хочете видалити цей інвентар?')">Видалити</a>
+                    <?php } else { ?>
+                        <span>Недоступно</span>
+                    <?php } ?>
                 </td>
             </tr>
         <?php } ?>
@@ -75,6 +83,8 @@ $result = $conn->query($query);
     <?php $conn->close(); ?>
     <br>
     <button class="button" onclick="window.location.href='index.php?sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>'">Повернутися на головну</button>
-    <button class="button" onclick="window.location.href='actions/inventory/add_inventory.php?sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>'">Додати новий інвентар</button>
+    <?php if ($isAdmin) { ?>
+        <button class="button" onclick="window.location.href='actions/inventory/add_inventory.php?sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>'">Додати новий інвентар</button>
+    <?php } ?>
 </body>
 </html>

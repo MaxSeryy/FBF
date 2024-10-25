@@ -1,7 +1,15 @@
 <?php
 require_once 'config.php';
 
-if (isset($_GET['delete_id'])) {
+session_start();
+if (!isset($_SESSION['username'])) {
+    header('Location: login.php');
+    exit();
+}
+
+$isAdmin = ($_SESSION['username'] === 'admin');
+
+if ($isAdmin && isset($_GET['delete_id'])) {
     $id = $_GET['delete_id'];
     $query = "DELETE FROM employee WHERE id=$id";
     if ($conn->query($query) === TRUE) {
@@ -71,8 +79,12 @@ $result = $conn->query($query);
                 <td><?= $row['project_name'] ?></td>
                 <td><?= $row['inventories'] ? $row['inventories'] : 'Немає інвентарю' ?></td>
                 <td>
-                    <a href="actions/employee/edit_employee.php?id=<?= $row['id'] ?>">Редагувати</a> |
-                    <a href="?delete_id=<?= $row['id'] ?>" onclick="return confirm('Ви впевнені, що хочете видалити цього працівника?')">Видалити</a>
+                    <?php if ($isAdmin) { ?>
+                        <a href="actions/employee/edit_employee.php?id=<?= $row['id'] ?>">Редагувати</a> |
+                        <a href="?delete_id=<?= $row['id'] ?>" onclick="return confirm('Ви впевнені, що хочете видалити цього працівника?')">Видалити</a>
+                    <?php } else { ?>
+                        <span>Недоступно</span>
+                    <?php } ?>
                 </td>
             </tr>
         <?php } ?>
@@ -81,6 +93,8 @@ $result = $conn->query($query);
     <?php $conn->close(); ?>
     <br>
     <button class="button" onclick="window.location.href='index.php'">Повернутися на головну</button>
-    <button class="button" onclick="window.location.href='actions/employee/add_employee.php'">Додати нового працівника</button>
+    <?php if ($isAdmin) { ?>
+        <button class="button" onclick="window.location.href='actions/employee/add_employee.php'">Додати нового працівника</button>
+    <?php } ?>
 </body>
 </html>

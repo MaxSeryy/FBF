@@ -1,7 +1,15 @@
 <?php
+session_start();
 require_once 'config.php';
 
-if (isset($_GET['delete_id'])) {
+if (!isset($_SESSION['username'])) {
+    header('Location: login.php');
+    exit();
+}
+
+$isAdmin = ($_SESSION['username'] === 'admin');
+
+if ($isAdmin && isset($_GET['delete_id'])) {
     $id = $_GET['delete_id'];
     $query = "DELETE FROM client WHERE id=$id";
 
@@ -21,6 +29,7 @@ $result = $conn->query($query);
 ?>
 <!DOCTYPE html>
 <html lang="uk">
+
 <head>
     <meta charset="UTF-8">
     <title>Клієнти</title>
@@ -42,18 +51,15 @@ $result = $conn->query($query);
                 localStorage.setItem('theme', newTheme);
                 themeToggle.textContent = newTheme === 'dark' ? 'Світла тема' : 'Темна тема';
             });
-            const message = document.getElementById('message');
-            if (message) {
-                setTimeout(() => {
-                    message.style.display = 'none';
-                }, 5000);
-            }
         });
     </script>
 </head>
+
 <body>
     <h1>Клієнти</h1>
-    <?php if (isset($deleteMessage)) { echo "<p>$deleteMessage</p>"; } ?>
+    <?php if (isset($deleteMessage)) {
+        echo "<p>$deleteMessage</p>";
+    } ?>
     <table border="1">
         <tr>
             <th><a href="?sort=id&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">ID</a></th>
@@ -68,8 +74,12 @@ $result = $conn->query($query);
                 <td><?= $row['name'] ?></td>
                 <td><?= $row['contact_info'] ?></td>
                 <td>
-                    <a href="actions/client/edit_client.php?id=<?= $row['id'] ?>">Редагувати</a> | 
-                    <a href="?delete_id=<?= $row['id'] ?>" onclick="return confirm('Ви впевнені, що хочете видалити цього клієнта?')">Видалити</a>
+                    <?php if ($isAdmin) { ?>
+                        <a href="actions/client/edit_client.php?id=<?= $row['id'] ?>">Редагувати</a> |
+                        <a href="?delete_id=<?= $row['id'] ?>" onclick="return confirm('Ви впевнені, що хочете видалити цього клієнта?')">Видалити</a>
+                    <?php } else { ?>
+                        <span>Недоступно</span>
+                    <?php } ?>
                 </td>
             </tr>
         <?php } ?>
@@ -77,6 +87,9 @@ $result = $conn->query($query);
     <?php $conn->close(); ?>
     <br>
     <button class="button" onclick="window.location.href='index.php'">Повернутися на головну</button>
-    <button class="button" onclick="window.location.href='actions/client/add_client.php'">Додати нового клієнта</button>
+    <?php if ($isAdmin) { ?>
+        <button class="button" onclick="window.location.href='actions/client/add_client.php'">Додати нового клієнта</button>
+    <?php } ?>
 </body>
+
 </html>

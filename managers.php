@@ -1,7 +1,15 @@
 <?php
 require_once 'config.php';
 
-if (isset($_GET['id'])) {
+session_start();
+if (!isset($_SESSION['username'])) {
+    header('Location: login.php');
+    exit();
+}
+
+$isAdmin = ($_SESSION['username'] === 'admin');
+
+if ($isAdmin && isset($_GET['id'])) {
     $id = $_GET['id'];
 
     $query = "DELETE FROM manager WHERE id=$id";
@@ -62,8 +70,12 @@ $result = $conn->query($query);
                 <td><?= $row['name'] ?></td>
                 <td><?= $row['contact_info'] ?></td>
                 <td>
-                    <a href="managers.php?id=<?= $row['id'] ?>&sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>" onclick="return confirm('Ви впевнені, що хочете видалити цього менеджера?')">Видалити</a> |
-                    <a href="actions/manager/edit_manager.php?id=<?= $row['id'] ?>&sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>">Редагувати</a>
+                    <?php if ($isAdmin) { ?>
+                        <a href="managers.php?id=<?= $row['id'] ?>&sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>" onclick="return confirm('Ви впевнені, що хочете видалити цього менеджера?')">Видалити</a> |
+                        <a href="actions/manager/edit_manager.php?id=<?= $row['id'] ?>&sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>">Редагувати</a>
+                    <?php } else { ?>
+                        <span>Недоступно</span>
+                    <?php } ?>
                 </td>
             </tr>
         <?php } ?>
@@ -71,6 +83,8 @@ $result = $conn->query($query);
     <?php $conn->close(); ?>
     <br>
     <button class="button" onclick="window.location.href='index.php?sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>'">Повернутися на головну</button>
-    <button class="button" onclick="window.location.href='actions/manager/add_manager.php?sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>'">Додати нового менеджера</button>
+    <?php if ($isAdmin) { ?>
+        <button class="button" onclick="window.location.href='actions/manager/add_manager.php?sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>'">Додати нового менеджера</button>
+    <?php } ?>
 </body>
 </html>
