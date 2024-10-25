@@ -70,7 +70,7 @@ $result = $conn->query($query);
     </table>
     <?php $conn->close(); ?>
     <br>
-    <button class="button" onclick="window.location.href='index.php?sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>'">Повернутися на головну</button>
     <button class="button" onclick="window.location.href='actions/manager/add_manager.php?sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>'">Додати нового менеджера</button>
+    <button class="button" onclick="window.location.href='index.php?sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>'">Повернутися на головну</button>
 </body>
 </html>
