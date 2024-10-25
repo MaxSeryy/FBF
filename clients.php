@@ -6,11 +6,18 @@ if (isset($_GET['delete_id'])) {
     $query = "DELETE FROM client WHERE id=$id";
 
     if ($conn->query($query) === TRUE) {
-        $deleteMessage = "Клієнт успішно видалений!";
+        header('Location: clients.php');
     } else {
         $deleteMessage = "Помилка: " . $conn->error;
     }
 }
+
+$sort_column = $_GET['sort'] ?? 'id';
+$sort_direction = $_GET['dir'] ?? 'ASC';
+$sort_direction = strtoupper($sort_direction) === 'ASC' ? 'ASC' : 'DESC';
+
+$query = "SELECT * FROM client ORDER BY $sort_column $sort_direction";
+$result = $conn->query($query);
 ?>
 <!DOCTYPE html>
 <html lang="uk">
@@ -46,15 +53,12 @@ if (isset($_GET['delete_id'])) {
 </head>
 <body>
     <h1>Клієнти</h1>
-    <?php
-    $query = "SELECT * FROM client";
-    $result = $conn->query($query);
-    ?>
+    <?php if (isset($deleteMessage)) { echo "<p>$deleteMessage</p>"; } ?>
     <table border="1">
         <tr>
-            <th>ID</th>
-            <th>Ім'я</th>
-            <th>Контактна інформація</th>
+            <th><a href="?sort=id&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">ID</a></th>
+            <th><a href="?sort=name&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Ім'я</a></th>
+            <th><a href="?sort=contact_info&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Контактна інформація</a></th>
             <button id="theme-toggle">Темна тема</button>
             <th>Дії</th>
         </tr>

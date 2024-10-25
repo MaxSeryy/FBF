@@ -35,6 +35,6 @@
     <button class="menu-button" onclick="window.location.href='employees.php'">Працівники</button>
     <button class="menu-button" onclick="window.location.href='inventory.php'">Інвентар</button>
     <button class="menu-button" onclick="window.location.href='managers.php'">Менеджери</button>
-    <div class="version">Версія 0.9.0</div>
+    <div class="version">Версія 0.9.5</div>
 </body>
 </html>

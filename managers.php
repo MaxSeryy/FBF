@@ -11,6 +11,13 @@ if (isset($_GET['id'])) {
         echo "Помилка: " . $conn->error;
     }
 }
+
+$sort_column = $_GET['sort'] ?? 'id';
+$sort_direction = $_GET['dir'] ?? 'ASC';
+$sort_direction = strtoupper($sort_direction) === 'ASC' ? 'ASC' : 'DESC';
+
+$query = "SELECT * FROM manager ORDER BY $sort_column $sort_direction";
+$result = $conn->query($query);
 ?>
 <!DOCTYPE html>
 <html lang="uk">
@@ -41,15 +48,12 @@ if (isset($_GET['id'])) {
 <body>
     <h1>Менеджери</h1>
     <button id="theme-toggle">Темна тема</button>
-    <?php
-    $query = "SELECT * FROM manager";
-    $result = $conn->query($query);
-    ?>
+    <?php if (isset($deleteMessage)) { echo "<p>$deleteMessage</p>"; } ?>
     <table border="1">
         <tr>
-            <th>ID</th>
-            <th>Ім'я</th>
-            <th>Контактна інформація</th>
+            <th><a href="?sort=id&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">ID</a></th>
+            <th><a href="?sort=name&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Ім'я</a></th>
+            <th><a href="?sort=contact_info&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Контактна інформація</a></th>
             <th>Дії</th>
         </tr>
         <?php while ($row = $result->fetch_assoc()) { ?>
@@ -58,15 +62,15 @@ if (isset($_GET['id'])) {
                 <td><?= $row['name'] ?></td>
                 <td><?= $row['contact_info'] ?></td>
                 <td>
-                    <a href="managers.php?id=<?= $row['id'] ?>" onclick="return confirm('Ви впевнені, що хочете видалити цього менеджера?')">Видалити</a> |
-                    <a href="actions/manager/edit_manager.php?id=<?= $row['id'] ?>">Редагувати</a>
+                    <a href="managers.php?id=<?= $row['id'] ?>&sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>" onclick="return confirm('Ви впевнені, що хочете видалити цього менеджера?')">Видалити</a> |
+                    <a href="actions/manager/edit_manager.php?id=<?= $row['id'] ?>&sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>">Редагувати</a>
                 </td>
             </tr>
         <?php } ?>
     </table>
     <?php $conn->close(); ?>
     <br>
-    <button class="button" onclick="window.location.href='index.php'">Повернутися на головну</button>
-    <button class="button" onclick="window.location.href='actions/manager/add_manager.php'">Додати нового менеджера</button>
+    <button class="button" onclick="window.location.href='index.php?sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>'">Повернутися на головну</button>
+    <button class="button" onclick="window.location.href='actions/manager/add_manager.php?sort=<?= $sort_column ?>&dir=<?= $sort_direction ?>'">Додати нового менеджера</button>
 </body>
 </html>

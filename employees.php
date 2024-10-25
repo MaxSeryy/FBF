@@ -10,24 +10,34 @@ if (isset($_GET['delete_id'])) {
         $message = "Помилка: " . $conn->error;
     }
 }
+
+$sort_column = $_GET['sort'] ?? 'id';
+$sort_direction = $_GET['dir'] ?? 'ASC';
+$sort_direction = strtoupper($sort_direction) === 'ASC' ? 'ASC' : 'DESC';
+
+$query = "SELECT employee.id, employee.name, employee.role, project.name AS project_name,
+          GROUP_CONCAT(DISTINCT inventory.name SEPARATOR ', ') AS inventories
+          FROM employee
+          JOIN project ON employee.project_id = project.id
+          LEFT JOIN employee_inventory ON employee.id = employee_inventory.employee_id
+          LEFT JOIN inventory ON employee_inventory.inventory_id = inventory.id
+          GROUP BY employee.id
+          ORDER BY $sort_column $sort_direction";
+$result = $conn->query($query);
 ?>
+
 <!DOCTYPE html>
 <html lang="uk">
-
 <head>
     <meta charset="UTF-8">
     <title>Працівники</title>
     <link rel="stylesheet" href="styles.css">
     <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
+        document.addEventListener('DOMContentLoaded', () => {
             const themeToggle = document.getElementById('theme-toggle');
             const currentTheme = localStorage.getItem('theme') || 'light';
-            if (currentTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-                themeToggle.textContent = 'Світла тема';
-            } else {
-                themeToggle.textContent = 'Темна тема';
-            }
+            document.body.classList.toggle('dark-mode', currentTheme === 'dark');
+            themeToggle.textContent = currentTheme === 'dark' ? 'Світла тема' : 'Темна тема';
 
             themeToggle.addEventListener('click', () => {
                 document.body.classList.toggle('dark-mode');
@@ -38,28 +48,19 @@ if (isset($_GET['delete_id'])) {
         });
     </script>
 </head>
-
 <body>
     <h1>Працівники</h1>
     <button id="theme-toggle">Темна тема</button>
+
     <?php if (isset($message)) { echo "<p>$message</p>"; } ?>
-    <?php
-    $query = "SELECT employee.id, employee.name, employee.role, project.name AS project_name,
-    GROUP_CONCAT(DISTINCT inventory.name SEPARATOR ', ') AS inventories
-    FROM employee
-    JOIN project ON employee.project_id = project.id
-    LEFT JOIN employee_inventory ON employee.id = employee_inventory.employee_id
-    LEFT JOIN inventory ON employee_inventory.inventory_id = inventory.id
-    GROUP BY employee.id";
-    $result = $conn->query($query);
-    ?>
+
     <table border="1">
         <tr>
-            <th>ID</th>
-            <th>Ім'я</th>
-            <th>Посада</th>
-            <th>Проект</th>
-            <th>Інвентар</th>
+            <th><a href="?sort=id&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">ID</a></th>
+            <th><a href="?sort=name&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Ім'я</a></th>
+            <th><a href="?sort=role&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Посада</a></th>
+            <th><a href="?sort=project_name&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Проект</a></th>
+            <th><a href="?sort=inventories&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Інвентар</a></th>
             <th>Дії</th>
         </tr>
         <?php while ($row = $result->fetch_assoc()) { ?>
@@ -76,10 +77,10 @@ if (isset($_GET['delete_id'])) {
             </tr>
         <?php } ?>
     </table>
+
     <?php $conn->close(); ?>
     <br>
     <button class="button" onclick="window.location.href='index.php'">Повернутися на головну</button>
     <button class="button" onclick="window.location.href='actions/employee/add_employee.php'">Додати нового працівника</button>
 </body>
-
 </html>

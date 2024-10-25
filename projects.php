@@ -9,11 +9,22 @@ if (isset($_GET['delete_id'])) {
     $query = "DELETE FROM project WHERE id=$id";
 
     if ($conn->query($query) === TRUE) {
-        $message = "Проект успішно видалений!";
+        header('Location: projects.php');
     } else {
         $message = "Помилка: " . $conn->error;
     }
 }
+
+$sort_column = $_GET['sort'] ?? 'id';
+$sort_direction = $_GET['dir'] ?? 'ASC';
+$sort_direction = strtoupper($sort_direction) === 'ASC' ? 'ASC' : 'DESC';
+
+$query = "SELECT project.id, project.name, project.start, project.end, project.status, manager.name AS manager_name, client.name AS client_name
+          FROM project
+          JOIN manager ON project.manager_id = manager.id
+          JOIN client ON project.client_id = client.id
+          ORDER BY $sort_column $sort_direction";
+$result = $conn->query($query);
 ?>
 <!DOCTYPE html>
 <html lang="uk">
@@ -51,22 +62,16 @@ if (isset($_GET['delete_id'])) {
 <body>
     <h1>Проекти</h1>
     <button id="theme-toggle">Темна тема</button>
-    <?php
-    $query = "SELECT project.id, project.name, project.start, project.end, project.status, manager.name AS manager_name, client.name AS client_name
-              FROM project
-              JOIN manager ON project.manager_id = manager.id
-              JOIN client ON project.client_id = client.id";
-    $result = $conn->query($query);
-    ?>
+    <?php if ($message) { echo "<p id='message'>$message</p>"; } ?>
     <table border="1">
         <tr>
-            <th>ID</th>
-            <th>Назва проекту</th>
-            <th>Дата початку</th>
-            <th>Дата завершення</th>
-            <th>Статус</th>
-            <th>Менеджер</th>
-            <th>Клієнт</th>
+            <th><a href="?sort=id&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">ID</a></th>
+            <th><a href="?sort=name&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Назва проекту</a></th>
+            <th><a href="?sort=start&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Дата початку</a></th>
+            <th><a href="?sort=end&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Дата завершення</a></th>
+            <th><a href="?sort=status&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Статус</a></th>
+            <th><a href="?sort=manager_name&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Менеджер</a></th>
+            <th><a href="?sort=client_name&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Клієнт</a></th>
             <th>Дії</th>
         </tr>
         <?php while ($row = $result->fetch_assoc()) { ?>
