@@ -80,6 +80,7 @@ $conn->close();
     <title>Редагувати менеджера</title>
 </head>
 <body>
+<button id="theme-toggle">Темна тема</button>
     <h1>Редагувати менеджера</h1>
     <form method="post" action="edit_manager.php?id=<?= htmlspecialchars($id) ?>">
         Ім'я: <input type="text" name="name" value="<?= htmlspecialchars($manager['name']) ?>" required><br><br>

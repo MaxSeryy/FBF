@@ -60,9 +60,10 @@ $result = $conn->query($query);
     </script>
 </head>
 <body>
+<button id="theme-toggle">Темна тема</button>
     <h1>Доступний Інвентар</h1>
     <?php if (isset($deleteMessage)) { echo "<p>$deleteMessage</p>"; } ?>
-    <table border="1">
+    <table class="styled-table">
         <tr>
             <th><a href="?sort=id&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">ID</a></th>
             <th><a href="?sort=name&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Назва</a></th>

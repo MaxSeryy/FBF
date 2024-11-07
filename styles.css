@@ -4,6 +4,9 @@ body {
     color: var(--text-color);
     margin: 0;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 :root {
@@ -11,6 +14,8 @@ body {
     --text-color: #333;
     --table-header-background: #f2f2f2;
     --table-header-text: #333;
+    --table-row-background: #fff;
+    --table-row-text: #333;
 }
 
 body.dark-mode {
@@ -18,10 +23,20 @@ body.dark-mode {
     --text-color: #f4f4f4;
     --table-header-background: #444;
     --table-header-text: #f4f4f4;
+    --table-row-background: #555;
+    --table-row-text: #f4f4f4;
+}
+
+body.dark-mode th {
+    background-color: var(--table-header-background);
+    color: var(--table-header-text);
 }
 
 h1 {
     color: var(--text-color);
+    font-size: 36px;
+    text-align: center; 
+    margin-top: 20px;
 }
 
 table {
@@ -42,6 +57,11 @@ th, td {
 th {
     background-color: var(--table-header-background);
     color: var(--table-header-text);
+}
+
+td {
+    background-color: var(--table-row-background);
+    color: var(--table-row-text);
 }
 
 a {
@@ -108,12 +128,6 @@ a:hover {
     background-color: #218838;
 }
 
-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
 .version {
     position: fixed;
     bottom: 10px;
@@ -129,6 +143,7 @@ body {
     border: 1px solid #ccc;
     background-color: #f0f0f0;
 }
+
 .dark-mode .message {
     background-color: #333;
     color: #fff;
@@ -179,4 +194,65 @@ body {
 
 .logout-button:hover {
     background-color: #c82333;
+}
+
+.styled-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 25px 0;
+    font-size: 18px;
+    text-align: left;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.styled-table thead {
+    border-radius: 10px 10px 0 0;
+}
+
+.styled-table thead tr {
+    background-color: #009879;
+    color: #ffffff;
+    text-align: left;
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 12px 15px;
+}
+
+.styled-table th:first-child {
+    border-top-left-radius: 10px;
+}
+
+.styled-table th:last-child {
+    border-top-right-radius: 10px;
+}
+
+.styled-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 10px;
+}
+
+.styled-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 10px;
+}
+
+.styled-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+    border-radius: 0 0 10px 10px;
+}
+
+.styled-table tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
 }

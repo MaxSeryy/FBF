@@ -60,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Додати інвентар</title>
 </head>
 <body>
+<button id="theme-toggle">Темна тема</button>
     <h1>Додати новий інвентар</h1>
     <form method="post" action="add_inventory.php">
         Назва: <input type="text" name="name" required><br><br>

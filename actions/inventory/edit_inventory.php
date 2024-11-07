@@ -74,6 +74,7 @@ $conn->close();
     <title>Редагувати інвентар</title>
 </head>
 <body>
+<button id="theme-toggle">Темна тема</button>
     <h1>Редагувати інвентар</h1>
     <form method="post" action="edit_inventory.php?id=<?= htmlspecialchars($id) ?>">
         Назва: <input type="text" name="name" value="<?= htmlspecialchars($inventory['name']) ?>" required><br><br>

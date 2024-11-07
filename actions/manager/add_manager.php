@@ -2,7 +2,6 @@
 require_once '../../config.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Sanitize and validate input data
     $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
     $contact_info = filter_input(INPUT_POST, 'contact_info', FILTER_SANITIZE_STRING);
 
@@ -11,17 +10,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-    // Prepare the SQL statement to prevent SQL injection
     $stmt = $conn->prepare("INSERT INTO manager (name, contact_info) VALUES (?, ?)");
     if ($stmt === false) {
         echo "Помилка підготовки запиту: " . $conn->error;
         exit();
     }
 
-    // Bind parameters to the prepared statement
     $stmt->bind_param("ss", $name, $contact_info);
 
-    // Execute the statement and check for errors
     if ($stmt->execute() === TRUE) {
         header('Location: ../../managers.php');
         exit();
@@ -63,6 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Додати менеджера</title>
 </head>
 <body>
+<button id="theme-toggle">Темна тема</button>
     <h1>Додати нового менеджера</h1>
     <form method="post" action="add_manager.php">
         Ім'я: <input type="text" name="name" required><br><br>

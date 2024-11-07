@@ -68,7 +68,7 @@ $result = $conn->query($query);
 
     <?php if (isset($message)) { echo "<p>$message</p>"; } ?>
 
-    <table border="1">
+    <table class="styled-table">
         <tr>
             <th><a href="?sort=id&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">ID</a></th>
             <th><a href="?sort=name&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Ім'я</a></th>

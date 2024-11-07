@@ -73,7 +73,7 @@ $result = $stmt->get_result();
     <h1>Проекти</h1>
     <button id="theme-toggle">Темна тема</button>
     <?php if ($message) { echo "<p id='message'>$message</p>"; } ?>
-    <table border="1">
+    <table class="styled-table">
         <tr>
             <th><a href="?sort=id&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">ID</a></th>
             <th><a href="?sort=name&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Назва проекту</a></th>
