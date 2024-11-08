@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-    if (!preg_match("/^[a-zA-Zа-яА-ЯёЁіІїЇєЄ'-]+$/u", $first_name) || !preg_match("/^[a-zA-Zа-яА-ЯёЁіЇїЄє'-]+$/u", $last_name)) {
+    if (!preg_match("/^[a-zA-Zа-яА-ЯёЁіІїЇєЄ'.\-\s]+$/u", $first_name) || !preg_match("/^[a-zA-Zа-яА-ЯёЁіЇїЄє'-]+$/u", $last_name)) {
         $response['success'] = false;
         $response['message'] = "Ім'я та прізвище можуть містити лише літери.";
         echo json_encode($response);
@@ -69,42 +69,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <title>Реєстрація</title>
     <link rel="stylesheet" href="../../styles.css">
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const themeToggle = document.getElementById('theme-toggle');
-            const currentTheme = localStorage.getItem('theme') || 'light';
-            if (currentTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-                themeToggle.textContent = 'Світла тема';
-            } else {
-                themeToggle.textContent = 'Темна тема';
-            }
-
-            themeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                const newTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
-                localStorage.setItem('theme', newTheme);
-                themeToggle.textContent = newTheme === 'dark' ? 'Світла тема' : 'Темна тема';
-            });
-
-            document.getElementById('register-form').addEventListener('submit', function(event) {
-                event.preventDefault();
-                const formData = new FormData(this);
-                fetch('register.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.href = data.redirect;
-                    } else {
-                        document.getElementById('error-message').textContent = data.message;
-                    }
-                });
-            });
-        });
-    </script>
+    <script src="../../scripts/theme.js" defer></script>
+    <script src="../../scripts/message.js" defer></script>
+    <script src="../../scripts/register.js" defer></script>
 </head>
 <body>
     <button id="theme-toggle">Темна тема</button>
@@ -114,14 +81,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         Прізвище: <input type="text" name="last_name" required><br><br>
         Пошта: <input type="email" name="email" required><br><br>
         Пароль: <input type="password" name="password" required><br><br>
-        <div style="text-align: center;">
+        <div class="center-text">
             <button type="submit" class="button">Зареєструватися</button>
         </div>
     </form>
-    <div id="error-message" style="color: red; text-align: center;"></div>
-    <br>
-    <div style="text-align: center;">
+    <div class="center-text">
         <button class="button" onclick="window.location.href='login.php'">Вхід</button>
+        <div id="error-message" class="error-message"></div>
     </div>
 </body>
-</html>
+</html> 

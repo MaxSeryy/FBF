@@ -1,5 +1,6 @@
 <?php
 require_once '../../config.php';
+$error_message = '';
 
 $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 
@@ -9,53 +10,48 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $project_id = filter_input(INPUT_POST, 'project_id', FILTER_SANITIZE_NUMBER_INT);
     $inventory_ids = filter_input(INPUT_POST, 'inventory_ids', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
 
-    if (empty($name) || empty($role) || empty($project_id)) {
-        echo "Будь ласка, заповніть всі поля.";
-        exit();
-    }
+    if (!preg_match("/^[a-zA-Zа-яА-ЯёЁіІїЇєЄ'.\-\s]+$/u", $name)) {
+        $error_message = "Ім'я може містити лише літери.";
+    } elseif (empty($name) || empty($role) || empty($project_id)) {
+        $error_message = "Будь ласка, заповніть всі поля.";
+    } else {
+        if ($id) {
+            $stmt = $conn->prepare("UPDATE employee SET name=?, role=?, project_id=? WHERE id=?");
+            if ($stmt === false) {
+                $error_message = "Помилка підготовки запиту: " . $conn->error;
+            } else {
+                $stmt->bind_param("ssii", $name, $role, $project_id, $id);
 
-    if ($id) {
-        $stmt = $conn->prepare("UPDATE employee SET name=?, role=?, project_id=? WHERE id=?");
-        if ($stmt === false) {
-            echo "Помилка підготовки запиту: " . $conn->error;
-            exit();
-        }
+                if ($stmt->execute() === TRUE) {
+                    $delete_stmt = $conn->prepare("DELETE FROM employee_inventory WHERE employee_id=?");
+                    $delete_stmt->bind_param("i", $id);
+                    $delete_stmt->execute();
+                    $delete_stmt->close();
 
-        $stmt->bind_param("ssii", $name, $role, $project_id, $id);
+                    if (!empty($inventory_ids)) {
+                        $inventory_stmt = $conn->prepare("INSERT INTO employee_inventory (employee_id, inventory_id) VALUES (?, ?)");
+                        if ($inventory_stmt === false) {
+                            $error_message = "Помилка підготовки запиту: " . $conn->error;
+                        } else {
+                            foreach ($inventory_ids as $inventory_id) {
+                                $inventory_stmt->bind_param("ii", $id, $inventory_id);
+                                $inventory_stmt->execute();
+                            }
 
-        if ($stmt->execute() === TRUE) {
-            $delete_stmt = $conn->prepare("DELETE FROM employee_inventory WHERE employee_id=?");
-            $delete_stmt->bind_param("i", $id);
-            $delete_stmt->execute();
-            $delete_stmt->close();
+                            $inventory_stmt->close();
+                        }
+                    }
 
-            if (!empty($inventory_ids)) {
-                $inventory_stmt = $conn->prepare("INSERT INTO employee_inventory (employee_id, inventory_id) VALUES (?, ?)");
-                if ($inventory_stmt === false) {
-                    echo "Помилка підготовки запиту: " . $conn->error;
+                    header('Location: ../../employees.php');
                     exit();
+                } else {
+                    $error_message = "Помилка: " . $stmt->error;
                 }
 
-                foreach ($inventory_ids as $inventory_id) {
-                    $inventory_stmt->bind_param("ii", $id, $inventory_id);
-                    $inventory_stmt->execute();
-                }
-
-                $inventory_stmt->close();
+                $stmt->close();
             }
-
-            header('Location: ../../employees.php');
-            exit();
-        } else {
-            echo "Помилка: " . $stmt->error;
         }
-
-        $stmt->close();
     }
-
-    $conn->close();
-    echo '<br><a href="../../employees.php">Повернутися до працівників</a>';
-    exit();
 }
 
 $employee = ['name' => '', 'role' => '', 'project_id' => ''];
@@ -64,25 +60,24 @@ $selected_inventories = [];
 if ($id) {
     $stmt = $conn->prepare("SELECT * FROM employee WHERE id=?");
     if ($stmt === false) {
-        echo "Помилка підготовки запиту: " . $conn->error;
-        exit();
-    }
+        $error_message = "Помилка підготовки запиту: " . $conn->error;
+    } else {
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $employee = $result->fetch_assoc();
+        $stmt->close();
 
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $employee = $result->fetch_assoc();
-    $stmt->close();
-
-    $selected_inventories_query = "SELECT inventory_id FROM employee_inventory WHERE employee_id=?";
-    $selected_inventories_stmt = $conn->prepare($selected_inventories_query);
-    $selected_inventories_stmt->bind_param("i", $id);
-    $selected_inventories_stmt->execute();
-    $selected_inventories_result = $selected_inventories_stmt->get_result();
-    while ($row = $selected_inventories_result->fetch_assoc()) {
-        $selected_inventories[] = $row['inventory_id'];
+        $selected_inventories_query = "SELECT inventory_id FROM employee_inventory WHERE employee_id=?";
+        $selected_inventories_stmt = $conn->prepare($selected_inventories_query);
+        $selected_inventories_stmt->bind_param("i", $id);
+        $selected_inventories_stmt->execute();
+        $selected_inventories_result = $selected_inventories_stmt->get_result();
+        while ($row = $selected_inventories_result->fetch_assoc()) {
+            $selected_inventories[] = $row['inventory_id'];
+        }
+        $selected_inventories_stmt->close();
     }
-    $selected_inventories_stmt->close();
 }
 
 $projects_query = "SELECT id, name FROM project";
@@ -96,6 +91,7 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="uk">
+
 <head>
     <meta charset="UTF-8">
     <title>Редагувати працівника</title>
@@ -127,6 +123,7 @@ $conn->close();
         });
     </script>
 </head>
+
 <body>
     <h1><?= $id ? 'Редагувати працівника' : 'Додати працівника' ?></h1>
     <button id="theme-toggle">Темна тема</button>
@@ -150,10 +147,16 @@ $conn->close();
                 </option>
             <?php } ?>
         </select><br><br>
-        <div style="text-align: center;">
+        <div class="center-text">
             <button type="submit" class="button">Оновити</button>
+            <br>
+            <button type="button" class="button" onclick="window.location.href='../../employees.php'">До списку працівників</button>
+            <br>
+            <?php if (!empty($error_message)): ?>
+                <div id="error-message" class="error-message"><?= htmlspecialchars($error_message) ?></div>
+            <?php endif; ?>
         </div>
     </form>
-    <button class="button" onclick="window.location.href='../../employees.php'">До списку працівників</button>
 </body>
+
 </html>

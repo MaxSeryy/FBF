@@ -256,3 +256,12 @@ a:hover {
     font-weight: bold;
     color: #009879;
 }
+/* */
+.center-text {
+    text-align: center;
+}
+
+.error-message {
+    color: red;
+    text-align: center;
+}

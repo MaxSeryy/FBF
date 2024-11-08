@@ -52,25 +52,8 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../../styles.css">
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const themeToggle = document.getElementById('theme-toggle');
-            const currentTheme = localStorage.getItem('theme') || 'light';
-            if (currentTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-                themeToggle.textContent = 'Світла тема';
-            } else {
-                themeToggle.textContent = 'Темна тема';
-            }
-
-            themeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                const newTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
-                localStorage.setItem('theme', newTheme);
-                themeToggle.textContent = newTheme === 'dark' ? 'Світла тема' : 'Темна тема';
-            });
-        });
-    </script>
+    <script src="../../scripts/theme.js" defer></script>
+    <script src="../../scripts/message.js" defer></script>
     <title>Редагувати інвентар</title>
 </head>
 <body>
@@ -79,10 +62,12 @@ $conn->close();
     <form method="post" action="edit_inventory.php?id=<?= htmlspecialchars($id) ?>">
         Назва: <input type="text" name="name" value="<?= htmlspecialchars($inventory['name']) ?>" required><br><br>
         Вартість оренди: <input type="number" step="0.01" name="rent_cost" value="<?= htmlspecialchars($inventory['rent_cost']) ?>" required><br><br>
-        <div style="text-align: center;">
+        <div class="center-text">
             <button type="submit" class="button">Оновити</button>
+            <br>
+            <button type="button" class="button" onclick="window.location.href='../../inventory.php'">До списку інвентарю</button>
         </div>
     </form>
-    <button class="button" onclick="window.location.href='../../inventory.php'">До списку інвентарю</button>
+   
 </body>
 </html>

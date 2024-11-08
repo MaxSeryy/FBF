@@ -38,25 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../styles.css">
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const themeToggle = document.getElementById('theme-toggle');
-            const currentTheme = localStorage.getItem('theme') || 'light';
-            if (currentTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-                themeToggle.textContent = 'Світла тема';
-            } else {
-                themeToggle.textContent = 'Темна тема';
-            }
-
-            themeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                const newTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
-                localStorage.setItem('theme', newTheme);
-                themeToggle.textContent = newTheme === 'dark' ? 'Світла тема' : 'Темна тема';
-            });
-        });
-    </script>
+    <script src="../../scripts/theme.js" defer></script>
+    <script src="../../scripts/message.js" defer></script>
     <title>Додати інвентар</title>
 </head>
 <body>
@@ -65,10 +48,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <form method="post" action="add_inventory.php">
         Назва: <input type="text" name="name" required><br><br>
         Вартість оренди: <input type="number" step="0.01" name="rent_cost" required><br><br>
-        <div style="text-align: center;">
+        <div class="center-text">
             <button type="submit" class="button">Додати</button>
+            <br>
+            <button type="button" class="button" onclick="window.location.href='../../inventory.php'">До списку інвентарю</button>
         </div>
     </form>
-    <button class="button" onclick="window.location.href='../../inventory.php'">До списку інвентарю</button>
 </body>
 </html>

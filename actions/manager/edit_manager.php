@@ -1,44 +1,34 @@
 <?php
 require_once '../../config.php';
 
-// Sanitize the 'id' parameter to prevent SQL injection
 $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+$error_message = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Sanitize and validate input data
     $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
     $contact_info = filter_input(INPUT_POST, 'contact_info', FILTER_SANITIZE_STRING);
 
-    if (empty($name) || empty($contact_info)) {
-        echo "Будь ласка, заповніть всі поля.";
-        exit();
-    }
-
-    // Prepare the SQL statement to prevent SQL injection
-    $stmt = $conn->prepare("UPDATE manager SET name=?, contact_info=? WHERE id=?");
-    if ($stmt === false) {
-        echo "Помилка підготовки запиту: " . $conn->error;
-        exit();
-    }
-
-    // Bind parameters to the prepared statement
-    $stmt->bind_param("ssi", $name, $contact_info, $id);
-
-    // Execute the statement and check for errors
-    if ($stmt->execute() === TRUE) {
-        header('Location: ../../managers.php');
-        exit();
+    if (!preg_match("/^[a-zA-Zа-яА-ЯёЁіІїЇєЄ'.\-\s]+$/u", $name)) {
+        $error_message = "Ім'я може містити лише літери.";
     } else {
-        echo "Помилка виконання запиту: " . $stmt->error;
+        $stmt = $conn->prepare("UPDATE manager SET name=?, contact_info=? WHERE id=?");
+        if ($stmt === false) {
+            $error_message = "Помилка підготовки запиту: " . $conn->error;
+        } else {
+            $stmt->bind_param("ssi", $name, $contact_info, $id);
+            if ($stmt->execute() === TRUE) {
+                $stmt->close();
+                $conn->close();
+                header('Location: ../../managers.php');
+                exit();
+            } else {
+                $error_message = "Помилка виконання запиту: " . $stmt->error;
+            }
+            $stmt->close();
+        }
     }
-
-    $stmt->close();
-    $conn->close();
-    echo '<br><a href="../../managers.php">Повернутися до менеджерів</a>';
-    exit();
 }
 
-// Prepare the SQL statement to prevent SQL injection
 $stmt = $conn->prepare("SELECT * FROM manager WHERE id=?");
 if ($stmt === false) {
     echo "Помилка підготовки запиту: " . $conn->error;
@@ -58,25 +48,7 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../../styles.css">
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const themeToggle = document.getElementById('theme-toggle');
-            const currentTheme = localStorage.getItem('theme') || 'light';
-            if (currentTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-                themeToggle.textContent = 'Світла тема';
-            } else {
-                themeToggle.textContent = 'Темна тема';
-            }
-
-            themeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                const newTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
-                localStorage.setItem('theme', newTheme);
-                themeToggle.textContent = newTheme === 'dark' ? 'Світла тема' : 'Темна тема';
-            });
-        });
-    </script>
+    <script src="../../scripts/theme.js" defer></script>
     <title>Редагувати менеджера</title>
 </head>
 <body>
@@ -85,10 +57,14 @@ $conn->close();
     <form method="post" action="edit_manager.php?id=<?= htmlspecialchars($id) ?>">
         Ім'я: <input type="text" name="name" value="<?= htmlspecialchars($manager['name']) ?>" required><br><br>
         Контактна інформація: <input type="text" name="contact_info" value="<?= htmlspecialchars($manager['contact_info']) ?>" required><br><br>
-        <div style="text-align: center;">
+        <div class="center-text">
             <button type="submit" class="button">Оновити</button>
+            <br>
+            <button type="button" class="button" onclick="window.location.href='../../managers.php'">До списку менеджерів</button>
+            <?php if (!empty($error_message)): ?>
+                <div id="error-message" class="error-message"><?= htmlspecialchars($error_message) ?></div>
+            <?php endif; ?>
         </div>
     </form>
-    <button class="button" onclick="window.location.href='../../managers.php'">До списку менеджерів</button>
 </body>
 </html>

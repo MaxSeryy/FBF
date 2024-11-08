@@ -11,6 +11,7 @@ if (isset($_GET['delete_id'])) {
         $stmt->bind_param("i", $id);
         if ($stmt->execute()) {
             header('Location: projects.php');
+            exit();
         } else {
             $message = "Помилка: " . $stmt->error;
         }
@@ -49,25 +50,7 @@ $result = $stmt->get_result();
     <meta charset="UTF-8">
     <title>Проекти</title>
     <link rel="stylesheet" href="styles.css">
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const themeToggle = document.getElementById('theme-toggle');
-            const currentTheme = localStorage.getItem('theme') || 'light';
-            if (currentTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-                themeToggle.textContent = 'Світла тема';
-            } else {
-                themeToggle.textContent = 'Темна тема';
-            }
-
-            themeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                const newTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
-                localStorage.setItem('theme', newTheme);
-                themeToggle.textContent = newTheme === 'dark' ? 'Світла тема' : 'Темна тема';
-            });
-        });
-    </script>
+    <script src="scripts/theme.js" defer></script>
 </head>
 <body>
     <h1>Проекти</h1>
@@ -100,6 +83,7 @@ $result = $stmt->get_result();
             </tr>
         <?php } ?>
     </table>
+    <?php $stmt->close(); ?>
     <?php $conn->close(); ?>
     <br>
     <button class="button" onclick="window.location.href='index.php'">Повернутися на головну</button>

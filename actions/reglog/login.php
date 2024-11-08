@@ -51,60 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <title>Вхід</title>
     <link rel="stylesheet" href="../../styles.css">
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const themeToggle = document.getElementById('theme-toggle');
-            const currentTheme = localStorage.getItem('theme') || 'light';
-            if (currentTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-                themeToggle.textContent = 'Світла тема';
-            } else {
-                themeToggle.textContent = 'Темна тема';
-            }
-
-            themeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                const newTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
-                localStorage.setItem('theme', newTheme);
-                themeToggle.textContent = newTheme === 'dark' ? 'Світла тема' : 'Темна тема';
-            });
-
-            document.getElementById('login-form').addEventListener('submit', function(event) {
-                event.preventDefault();
-                const formData = new FormData(this);
-                fetch('login.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.href = data.redirect;
-                    } else {
-                        document.getElementById('error-message').textContent = data.message;
-                    }
-                });
-            });
-
-            document.getElementById('guest-login').addEventListener('click', function(event) {
-                event.preventDefault();
-                const formData = new FormData();
-                formData.append('guest', 'true');
-                fetch('login.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.href = data.redirect;
-                    } else {
-                        document.getElementById('error-message').textContent = data.message;
-                    }
-                });
-            });
-        });
-    </script>
+    <script src="../../scripts/theme.js" defer></script>
+    <script src="../../scripts/message.js" defer></script>
+    <script src="../../scripts/login.js" defer></script>
 </head>
 <body>
     <button id="theme-toggle">Темна тема</button>
@@ -112,15 +61,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <form id="login-form" method="post">
         Пошта: <input type="email" name="email" required><br><br>
         Пароль: <input type="password" name="password" required><br><br>
-        <div style="text-align: center;">
+        <div class="center-text">
             <button type="submit" class="button">Увійти</button>
         </div>
     </form>
-    <div id="error-message" style="color: red; text-align: center;"></div>
-    <br>
     <div style="text-align: center;">
         <button id="guest-login" class="button">Увійти як гість</button> <br>
         <button type="button" class="button" onclick="window.location.href='register.php'">Реєстрація</button>
+        <div id="error-message" class="error-message"></div>
     </div>
 </body>
 </html>
