@@ -2,6 +2,11 @@
 session_start();
 require_once 'config.php';
 
+if (!isset($_SESSION['user_id'])) {
+    header('Location: actions/reglog/login.php');
+    exit();
+}
+
 if (isset($_GET['action']) && $_GET['action'] == 'logout') {
     session_destroy();
     header('Location: actions/reglog/login.php');
