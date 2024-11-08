@@ -36,11 +36,13 @@ if (!in_array($sort_direction, $allowed_directions)) {
     $sort_direction = 'ASC';
 }
 
-$stmt = $conn->prepare("SELECT project.id, project.name, project.start, project.end, project.status, manager.name AS manager_name, client.name AS client_name
-                        FROM project
-                        JOIN manager ON project.manager_id = manager.id
-                        JOIN client ON project.client_id = client.id
-                        ORDER BY $sort_column $sort_direction");
+$query = "SELECT project.id, project.name, project.start, project.end, project.status, manager.name AS manager_name, client.name AS client_name
+          FROM project
+          JOIN manager ON project.manager_id = manager.id
+          JOIN client ON project.client_id = client.id
+          ORDER BY $sort_column $sort_direction";
+
+$stmt = $conn->prepare($query);
 $stmt->execute();
 $result = $stmt->get_result();
 ?>

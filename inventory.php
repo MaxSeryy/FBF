@@ -4,12 +4,14 @@ require_once 'config.php';
 if (isset($_GET['id'])) {
     $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
     if ($id) {
-        $query = "DELETE FROM inventory WHERE id=$id";
-        if ($conn->query($query) === TRUE) {
+        $stmt = $conn->prepare("DELETE FROM inventory WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        if ($stmt->execute()) {
             header('Location: inventory.php');
         } else {
             echo "Помилка: " . $conn->error;
         }
+        $stmt->close();
     } else {
         echo "Невірний ID для видалення.";
     }
@@ -30,8 +32,9 @@ if (!in_array($sort_direction, $allowed_directions)) {
     $sort_direction = 'ASC';
 }
 
-$query = "SELECT * FROM inventory ORDER BY $sort_column $sort_direction";
-$result = $conn->query($query);
+$stmt = $conn->prepare("SELECT * FROM inventory ORDER BY $sort_column $sort_direction");
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
 <!DOCTYPE html>
 <html lang="uk">
