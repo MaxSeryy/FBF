@@ -2,13 +2,17 @@
 session_start();
 require_once '../../config.php';
 
+function sanitize_input($data) {
+    return htmlspecialchars(trim($data));
+}
+
 $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
-    $start = filter_input(INPUT_POST, 'start', FILTER_SANITIZE_STRING);
-    $end = filter_input(INPUT_POST, 'end', FILTER_SANITIZE_STRING);
-    $status = filter_input(INPUT_POST, 'status', FILTER_SANITIZE_STRING);
+    $name = sanitize_input(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
+    $start = sanitize_input(filter_input(INPUT_POST, 'start', FILTER_SANITIZE_STRING));
+    $end = sanitize_input(filter_input(INPUT_POST, 'end', FILTER_SANITIZE_STRING));
+    $status = sanitize_input(filter_input(INPUT_POST, 'status', FILTER_SANITIZE_STRING));
     $manager_id = filter_input(INPUT_POST, 'manager_id', FILTER_SANITIZE_NUMBER_INT);
     $client_id = filter_input(INPUT_POST, 'client_id', FILTER_SANITIZE_NUMBER_INT);
 
@@ -23,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-    $stmt->bind_param("ssssiis", $name, $start, $end, $status, $manager_id, $client_id, $id);
+    $stmt->bind_param("ssssiii", $name, $start, $end, $status, $manager_id, $client_id, $id);
 
     if ($stmt->execute() === TRUE) {
         $stmt->close();
@@ -89,7 +93,7 @@ $conn->close();
             <?php } ?>
         </select><br><br>
         <div class="center-text">
-            <button type="submit" class="button">Зберегти зміни</button>
+            <button type="submit" class="button">Оновити</button>
             <br>
             <button type="button" class="button" onclick="window.location.href='../../projects.php'">До списку проектів</button>
         </div>

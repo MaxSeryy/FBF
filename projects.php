@@ -2,6 +2,8 @@
 session_start();
 require_once 'config.php';
 
+header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self';");
+
 $message = '';
 
 if (isset($_GET['delete_id'])) {
@@ -21,31 +23,33 @@ if (isset($_GET['delete_id'])) {
     }
 }
 
-$sort_column = filter_input(INPUT_GET, 'sort', FILTER_SANITIZE_STRING) ?? 'id';
-$sort_direction = filter_input(INPUT_GET, 'dir', FILTER_SANITIZE_STRING) ?? 'ASC';
-$sort_direction = strtoupper($sort_direction) === 'ASC' ? 'ASC' : 'DESC';
-
 $allowed_columns = ['id', 'name', 'start', 'end', 'status', 'manager_name', 'client_name'];
 $allowed_directions = ['ASC', 'DESC'];
 
-if (!in_array($sort_column, $allowed_columns)) {
-    $sort_column = 'id';
+$sort_column = 'id';
+$sort_direction = 'ASC';
+
+if (isset($_GET['sort']) && in_array($_GET['sort'], $allowed_columns)) {
+    $sort_column = $_GET['sort'];
 }
 
-if (!in_array($sort_direction, $allowed_directions)) {
-    $sort_direction = 'ASC';
+if (isset($_GET['dir']) && in_array(strtoupper($_GET['dir']), $allowed_directions)) {
+    $sort_direction = strtoupper($_GET['dir']);
 }
+
+$order_by = "ORDER BY " . $sort_column . " " . $sort_direction;
 
 $query = "SELECT project.id, project.name, project.start, project.end, project.status, manager.name AS manager_name, client.name AS client_name
           FROM project
           JOIN manager ON project.manager_id = manager.id
           JOIN client ON project.client_id = client.id
-          ORDER BY $sort_column $sort_direction";
+          $order_by";
 
 $stmt = $conn->prepare($query);
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
+
 <!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -57,16 +61,16 @@ $result = $stmt->get_result();
 <body>
     <h1>Проекти</h1>
     <button id="theme-toggle">Темна тема</button>
-    <?php if ($message) { echo "<p id='message'>$message</p>"; } ?>
+    <?php if ($message) { echo "<p id='message'>" . htmlspecialchars($message) . "</p>"; } ?>
     <table class="styled-table">
         <tr>
             <th><a href="?sort=id&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">ID</a></th>
             <th><a href="?sort=name&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Назва проекту</a></th>
             <th><a href="?sort=start&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Дата початку</a></th>
-            <th><a href="?sort=end&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Дата завершення</a></th>
-            <th><a href="?sort=status&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Статус</a></th>
-            <th><a href="?sort=manager_name&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Менеджер</a></th>
-            <th><a href="?sort=client_name&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Клієнт</a></th>
+            <th><a href="?sort=end&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Дата завершення</а></th>
+            <th><a href="?sort=status&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Статус</а></th>
+            <th><a href="?sort=manager_name&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Менеджер</а></th>
+            <th><a href="?sort=client_name&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Клієнт</а></th>
             <th>Дії</th>
         </tr>
         <?php while ($row = $result->fetch_assoc()) { ?>
@@ -79,8 +83,8 @@ $result = $stmt->get_result();
                 <td><?= htmlspecialchars($row['manager_name']) ?></td>
                 <td><?= htmlspecialchars($row['client_name']) ?></td>
                 <td>
-                    <a href="actions/project/edit_project.php?id=<?= htmlspecialchars($row['id']) ?>">Редагувати</a> |
-                    <a href="?delete_id=<?= htmlspecialchars($row['id']) ?>" onclick="return confirm('Ви впевнені, що хочете видалити цей проект?')">Видалити</a>
+                    <a href="actions/project/edit_project.php?id=<?= htmlspecialchars($row['id']) ?>">Редагувати</а> |
+                    <a href="?delete_id=<?= htmlspecialchars($row['id']) ?>" onclick="return confirm('Ви впевнені, що хочете видалити цей проект?')">Видалити</а>
                 </td>
             </tr>
         <?php } ?>

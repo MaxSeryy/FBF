@@ -4,12 +4,20 @@ $error_message = '';
 $name = '';
 $contact_info = '';
 
+function sanitize_input($data) {
+    return htmlspecialchars(trim($data));
+}
+
+function validate_name($name) {
+    return preg_match("/^[a-zA-Zа-яА-ЯёЁіІїЇєЄ'.\-\s]+$/u", $name);
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
-    $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
-    $contact_info = filter_input(INPUT_POST, 'contact_info', FILTER_SANITIZE_STRING);
+    $name = sanitize_input(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
+    $contact_info = sanitize_input(filter_input(INPUT_POST, 'contact_info', FILTER_SANITIZE_STRING));
 
-    if (!preg_match("/^[a-zA-Zа-яА-ЯёЁіІїЇєЄ'.\-\s]+$/u", $name)) {
+    if (!validate_name($name)) {
         $error_message = "Ім'я може містити лише літери, пробіли, крапки та тире.";
     } else {
         $update_query = "UPDATE client SET name=?, contact_info=? WHERE id=?";

@@ -2,15 +2,23 @@
 require_once '../../config.php';
 $error_message = '';
 
+function sanitize_input($data) {
+    return htmlspecialchars(trim($data));
+}
+
+function validate_name($name) {
+    return preg_match("/^[a-zA-Zа-яА-ЯёЁіІїЇєЄ'.\-\s]+$/u", $name);
+}
+
 $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
-    $role = filter_input(INPUT_POST, 'role', FILTER_SANITIZE_STRING);
+    $name = sanitize_input(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
+    $role = sanitize_input(filter_input(INPUT_POST, 'role', FILTER_SANITIZE_STRING));
     $project_id = filter_input(INPUT_POST, 'project_id', FILTER_SANITIZE_NUMBER_INT);
     $inventory_ids = filter_input(INPUT_POST, 'inventory_ids', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
 
-    if (!preg_match("/^[a-zA-Zа-яА-ЯёЁіІїЇєЄ'.\-\s]+$/u", $name)) {
+    if (!validate_name($name)) {
         $error_message = "Ім'я може містити лише літери.";
     } elseif (empty($name) || empty($role) || empty($project_id)) {
         $error_message = "Будь ласка, заповніть всі поля.";

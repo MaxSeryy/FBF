@@ -1,8 +1,12 @@
 <?php
 require_once '../../config.php';
 
+function sanitize_input($data) {
+    return htmlspecialchars(trim($data));
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+    $name = sanitize_input(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
     $rent_cost = filter_input(INPUT_POST, 'rent_cost', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
 
     if (empty($name) || empty($rent_cost)) {

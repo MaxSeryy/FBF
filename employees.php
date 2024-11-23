@@ -1,6 +1,12 @@
 <?php
 require_once 'config.php';
 
+header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self';");
+
+function sanitize_input($data) {
+    return htmlspecialchars(trim($data));
+}
+
 if (isset($_GET['delete_id'])) {
     $id = filter_input(INPUT_GET, 'delete_id', FILTER_SANITIZE_NUMBER_INT);
     if ($id) {
@@ -15,8 +21,8 @@ if (isset($_GET['delete_id'])) {
     }
 }
 
-$sort_column = filter_input(INPUT_GET, 'sort', FILTER_SANITIZE_STRING) ?? 'id';
-$sort_direction = filter_input(INPUT_GET, 'dir', FILTER_SANITIZE_STRING) ?? 'ASC';
+$sort_column = sanitize_input(filter_input(INPUT_GET, 'sort', FILTER_SANITIZE_STRING)) ?? 'id';
+$sort_direction = sanitize_input(filter_input(INPUT_GET, 'dir', FILTER_SANITIZE_STRING)) ?? 'ASC';
 $sort_direction = strtoupper($sort_direction) === 'ASC' ? 'ASC' : 'DESC';
 
 $allowed_columns = ['id', 'name', 'role', 'project_name', 'inventories'];

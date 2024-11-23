@@ -1,10 +1,15 @@
 <?php
 require_once '../../config.php';
+
+function sanitize_input($data) {
+    return htmlspecialchars(trim($data));
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
-    $start = filter_input(INPUT_POST, 'start', FILTER_SANITIZE_STRING);
-    $end = filter_input(INPUT_POST, 'end', FILTER_SANITIZE_STRING);
-    $status = filter_input(INPUT_POST, 'status', FILTER_SANITIZE_STRING);
+    $name = sanitize_input(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
+    $start = sanitize_input(filter_input(INPUT_POST, 'start', FILTER_SANITIZE_STRING));
+    $end = sanitize_input(filter_input(INPUT_POST, 'end', FILTER_SANITIZE_STRING));
+    $status = sanitize_input(filter_input(INPUT_POST, 'status', FILTER_SANITIZE_STRING));
     $manager_id = filter_input(INPUT_POST, 'manager_id', FILTER_SANITIZE_NUMBER_INT);
     $client_id = filter_input(INPUT_POST, 'client_id', FILTER_SANITIZE_NUMBER_INT);
 

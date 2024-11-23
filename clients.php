@@ -1,6 +1,12 @@
 <?php
 require_once 'config.php';
 
+header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' 'nonce-123456'; img-src 'self';");
+
+function sanitize_input($data) {
+    return htmlspecialchars(trim($data));
+}
+
 if (isset($_GET['delete_id'])) {
     $id = filter_input(INPUT_GET, 'delete_id', FILTER_SANITIZE_NUMBER_INT);
     if ($id) {
@@ -15,8 +21,8 @@ if (isset($_GET['delete_id'])) {
     }
 }
 
-$sort_column = filter_input(INPUT_GET, 'sort', FILTER_SANITIZE_STRING) ?? 'id';
-$sort_direction = filter_input(INPUT_GET, 'dir', FILTER_SANITIZE_STRING) ?? 'ASC';
+$sort_column = sanitize_input(filter_input(INPUT_GET, 'sort', FILTER_SANITIZE_STRING)) ?? 'id';
+$sort_direction = sanitize_input(filter_input(INPUT_GET, 'dir', FILTER_SANITIZE_STRING)) ?? 'ASC';
 $sort_direction = strtoupper($sort_direction) === 'ASC' ? 'ASC' : 'DESC';
 
 $allowed_columns = ['id', 'name', 'contact_info'];
@@ -38,16 +44,15 @@ $result = $conn->query($query);
 <head>
     <meta charset="UTF-8">
     <title>Клієнти</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css" nonce="123456">
     <script src="scripts/theme.js" defer></script>
 </head>
 <body>
-<button id="theme-toggle">Темна тема</button>
+    <button id="theme-toggle">Темна тема</button>
     <h1>Клієнти</h1>
     <?php if (isset($deleteMessage)) { echo "<p>$deleteMessage</p>"; } ?>
     <table class="styled-table">
         <tr>
-
             <th><a href="?sort=id&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">ID</a></th>
             <th><a href="?sort=name&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Ім'я</a></th>
             <th><a href="?sort=contact_info&dir=<?= $sort_direction === 'ASC' ? 'DESC' : 'ASC' ?>">Контактна інформація</a></th>

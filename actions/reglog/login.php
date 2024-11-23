@@ -4,6 +4,10 @@ session_start();
 
 $response = [];
 
+function sanitize_input($data) {
+    return htmlspecialchars(trim($data));
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['guest'])) {
         $_SESSION['user_id'] = 0;
@@ -12,8 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $response['success'] = true;
         $response['redirect'] = '../../index.php';
     } else {
-        $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-        $password = $_POST['password'];
+        $email = sanitize_input(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
+        $password = sanitize_input($_POST['password']);
 
         $stmt = $conn->prepare("SELECT id, first_name, last_name, password FROM users WHERE email=?");
         $stmt->bind_param("s", $email);

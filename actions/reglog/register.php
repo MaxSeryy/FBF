@@ -4,13 +4,21 @@ session_start();
 
 $response = [];
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $first_name = filter_input(INPUT_POST, 'first_name', FILTER_SANITIZE_STRING);
-    $last_name = filter_input(INPUT_POST, 'last_name', FILTER_SANITIZE_STRING);
-    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+function sanitize_input($data) {
+    return htmlspecialchars(trim($data));
+}
 
-    if (!preg_match("/^[a-zA-Zа-яА-ЯёЁіІїЇєЄ'.\-\s]+$/u", $first_name) || !preg_match("/^[a-zA-Zа-яА-ЯёЁіЇїЄє'-]+$/u", $last_name)) {
+function validate_name($name) {
+    return preg_match("/^[a-zA-Zа-яА-ЯёЁіІїЇєЄ'.\-\s]+$/u", $name);
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $first_name = sanitize_input(filter_input(INPUT_POST, 'first_name', FILTER_SANITIZE_STRING));
+    $last_name = sanitize_input(filter_input(INPUT_POST, 'last_name', FILTER_SANITIZE_STRING));
+    $email = sanitize_input(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL));
+    $password = password_hash(sanitize_input($_POST['password']), PASSWORD_DEFAULT);
+
+    if (!validate_name($first_name) || !validate_name($last_name)) {
         $response['success'] = false;
         $response['message'] = "Ім'я та прізвище можуть містити лише літери.";
         echo json_encode($response);
@@ -90,4 +98,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div id="error-message" class="error-message"></div>
     </div>
 </body>
-</html> 
+</html>

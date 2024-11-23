@@ -4,11 +4,19 @@ $error_message = '';
 $name = '';
 $contact_info = '';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
-    $contact_info = filter_input(INPUT_POST, 'contact_info', FILTER_SANITIZE_STRING);
+function sanitize_input($data) {
+    return htmlspecialchars(trim($data));
+}
 
-    if (!preg_match("/^[a-zA-Zа-яА-ЯёЁіІїЇєЄ'.\-\s]+$/u", $name)) {
+function validate_name($name) {
+    return preg_match("/^[a-zA-Zа-яА-ЯёЁіІїЇєЄ'.\-\s]+$/u", $name);
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $name = sanitize_input(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
+    $contact_info = sanitize_input(filter_input(INPUT_POST, 'contact_info', FILTER_SANITIZE_STRING));
+
+    if (!validate_name($name)) {
         $error_message = "Ім'я може містити лише літери.";
     } else {
         $query = "INSERT INTO client (name, contact_info) VALUES (?, ?)";

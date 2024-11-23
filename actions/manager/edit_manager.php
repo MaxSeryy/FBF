@@ -1,14 +1,22 @@
 <?php
 require_once '../../config.php';
 
+function sanitize_input($data) {
+    return htmlspecialchars(trim($data));
+}
+
+function validate_name($name) {
+    return preg_match("/^[a-zA-Zа-яА-ЯёЁіІїЇєЄ'.\-\s]+$/u", $name);
+}
+
 $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
 $error_message = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
-    $contact_info = filter_input(INPUT_POST, 'contact_info', FILTER_SANITIZE_STRING);
+    $name = sanitize_input(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
+    $contact_info = sanitize_input(filter_input(INPUT_POST, 'contact_info', FILTER_SANITIZE_STRING));
 
-    if (!preg_match("/^[a-zA-Zа-яА-ЯёЁіІїЇєЄ'.\-\s]+$/u", $name)) {
+    if (!validate_name($name)) {
         $error_message = "Ім'я може містити лише літери.";
     } else {
         $stmt = $conn->prepare("UPDATE manager SET name=?, contact_info=? WHERE id=?");
