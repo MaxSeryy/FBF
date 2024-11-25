@@ -9,6 +9,7 @@ body {
     align-items: center;
 }
 
+/* Variables */
 :root {
     --background-color: #f4f4f4;
     --text-color: #333;
@@ -18,6 +19,7 @@ body {
     --table-row-text: #333;
 }
 
+/* Dark mode */
 body.dark-mode {
     --background-color: #333;
     --text-color: #f4f4f4;
@@ -27,52 +29,62 @@ body.dark-mode {
     --table-row-text: #f4f4f4;
 }
 
+/* Dark mode table header */
 body.dark-mode th {
     background-color: var(--table-header-background);
     color: var(--table-header-text);
 }
 
+/* Heading */
 h1 {
     color: var(--text-color);
     font-size: 36px;
     text-align: center; 
     margin-top: 20px;
 }
-/** table**/
+
+/* Table */
 table {
     width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
 }
 
+/* Table borders */
 table, th, td {
     border: 1px solid #ddd;
 }
 
+/* Table cells */
 th, td {
     padding: 8px;
     text-align: left;
 }
 
+/* Table header */
 th {
     background-color: var(--table-header-background);
     color: var(--table-header-text);
 }
 
+/* Table rows */
 td {
     background-color: var(--table-row-background);
     color: var(--table-row-text);
 }
 
+/* Links */
 a {
     color: #007bff;
     text-decoration: none;
 }
 
+/* Link hover */
 a:hover {
     text-decoration: underline;
 }
 
+/* Theme toggle button */
 #theme-toggle {
     position: fixed;
     top: 10px;
@@ -86,10 +98,12 @@ a:hover {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* Theme toggle hover */
 #theme-toggle:hover {
     background-color: #ddd;
 }
 
+/* Button */
 .button {
     padding: 10px 20px;
     background-color: #007bff;
@@ -104,10 +118,12 @@ a:hover {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* Button hover */
 .button:hover {
     background-color: #0056b3;
 }
 
+/* Menu button */
 .menu-button {
     padding: 10px 20px;
     background-color: #28a745;
@@ -124,10 +140,12 @@ a:hover {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
 }
 
+/* Menu button hover */
 .menu-button:hover {
     background-color: #218838;
 }
 
+/* Version text */
 .version {
     position: fixed;
     bottom: 10px;
@@ -136,6 +154,7 @@ a:hover {
     color: #666;
 }
 
+/* Message box */
 .message {
     text-align: center;
     margin: 10px 0;
@@ -144,12 +163,14 @@ a:hover {
     background-color: #f0f0f0;
 }
 
+/* Dark mode message */
 .dark-mode .message {
     background-color: #333;
     color: #fff;
     border-color: #444;
 }
 
+/* Success message */
 .message.success {
     background-color: #d4edda;
     color: #155724;
@@ -160,6 +181,7 @@ a:hover {
     text-align: center;
 }
 
+/* User info box */
 .user-info {
     display: flex;
     flex-direction: column;
@@ -175,12 +197,14 @@ a:hover {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* Welcome text */
 .user-info .welcome-text {
     font-size: 16px;
     font-weight: 500;
     color: var(--text-color);
 }
 
+/* Logout button */
 .logout-button {
     padding: 8px 15px;
     font-size: 16px;
@@ -192,10 +216,12 @@ a:hover {
     transition: background-color 0.3s ease;
 }
 
+/* Logout button hover */
 .logout-button:hover {
     background-color: #c82333;
 }
 
+/* Styled table */
 .styled-table {
     width: 100%;
     border-collapse: separate;
@@ -208,60 +234,75 @@ a:hover {
     overflow: hidden;
 }
 
+/* Styled table header */
 .styled-table thead {
     border-radius: 10px 10px 0 0;
 }
 
+/* Styled table header row */
 .styled-table thead tr {
     background-color: #009879;
     color: #ffffff;
     text-align: left;
 }
 
+/* Styled table cells */
 .styled-table th,
 .styled-table td {
     padding: 12px 15px;
 }
 
+/* Styled table first header cell */
 .styled-table th:first-child {
     border-top-left-radius: 10px;
 }
 
+/* Styled table last header cell */
 .styled-table th:last-child {
     border-top-right-radius: 10px;
 }
 
+/* Styled table first cell of last row */
 .styled-table tbody tr:last-child td:first-child {
     border-bottom-left-radius: 10px;
 }
 
+/* Styled table last cell of last row */
 .styled-table tbody tr:last-child td:last-child {
     border-bottom-right-radius: 10px;
 }
 
+/* Styled table rows */
 .styled-table tbody tr {
     border-bottom: 1px solid #dddddd;
 }
 
+/* Styled table even rows */
 .styled-table tbody tr:nth-of-type(even) {
     background-color: #f3f3f3;
 }
 
+/* Styled table last row */
 .styled-table tbody tr:last-of-type {
     border-bottom: 2px solid #009879;
     border-radius: 0 0 10px 10px;
 }
 
+/* Styled table active row */
 .styled-table tbody tr.active-row {
     font-weight: bold;
     color: #009879;
 }
-/* */
+
+/* Center text */
 .center-text {
     text-align: center;
 }
 
+/* Error message */
 .error-message {
     color: red;
     text-align: center;
 }
+
+/* ＞__＜ */

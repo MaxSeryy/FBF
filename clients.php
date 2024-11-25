@@ -24,7 +24,7 @@ if (isset($_GET['delete_id'])) {
 $sort_column = sanitize_input(filter_input(INPUT_GET, 'sort', FILTER_SANITIZE_STRING)) ?? 'id';
 $sort_direction = sanitize_input(filter_input(INPUT_GET, 'dir', FILTER_SANITIZE_STRING)) ?? 'ASC';
 $sort_direction = strtoupper($sort_direction) === 'ASC' ? 'ASC' : 'DESC';
-
+// check
 $allowed_columns = ['id', 'name', 'contact_info'];
 $allowed_directions = ['ASC', 'DESC'];
 
@@ -35,7 +35,7 @@ if (!in_array($sort_column, $allowed_columns)) {
 if (!in_array($sort_direction, $allowed_directions)) {
     $sort_direction = 'ASC';
 }
-
+//use prepared commands
 $query = "SELECT * FROM client ORDER BY $sort_column $sort_direction";
 $result = $conn->query($query);
 ?>

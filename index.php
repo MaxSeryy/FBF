@@ -12,7 +12,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'logout') {
     header('Location: actions/reglog/login.php');
     exit();
 }
-
+//idk how to use this
 header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self';");
 ?>
 <!DOCTYPE html>
@@ -53,5 +53,5 @@ header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-i
     <button class="menu-button" onclick="window.location.href='employees.php'">Працівники</button>
     <button class="menu-button" onclick="window.location.href='inventory.php'">Інвентар</button>
     <button class="menu-button" onclick="window.location.href='managers.php'">Менеджери</button>
-    <div class="version">Версія 1.0.0</div>
+    <div class="version">Версія 1.0.1</div>
 </body>
